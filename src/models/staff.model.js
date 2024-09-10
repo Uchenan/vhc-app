@@ -4,7 +4,7 @@ export default {
         surname: "",
         other_names: "", 
         gender: "", 
-        dob: "", 
+        date_of_birth: "", 
         state_of_origin: "", 
         nationality: "",
         religion: ""
@@ -15,23 +15,10 @@ export default {
         job_position: "", 
         security_question: "",
         security_answer: "",
-        admin_rights: ""
+        admin_rights: "",
+        disable_acct: "no"
     },
-    academic: {
-        class_teacher: "", 
-        position: "", 
-        subjects_handling: ""
-    },
-    bank: {
-        acct_name: "",
-        bank_name: "", 
-        acct_no: "", 
-    },
-    contact: {
-        tel_1: "",
-        tel_2: "",
-        email: "",
-        home_addr_one: "",
-        home_addr_two: ""
-    }
+    academic: {},
+    bank: {}, 
+    contact: {}
 }

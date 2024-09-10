@@ -1,16 +1,22 @@
 <template>
     <div>
+        <div class="absolute z-40">
+            <ModalComponent />
+        </div>
         <LoadingComponent v-if="loadingState" /> 
-        <router-view></router-view>
+        <div class="router text-sm">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
 <script>
 import LoadingComponent from "@/components/LoadingComponent.vue"
+import { container } from "jenesius-vue-modal"
 
 export default {
     components: {
-        LoadingComponent 
+        LoadingComponent, ModalComponent: container
     }, 
     computed: {
         loadingState(){
@@ -20,6 +26,18 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.modal {
+    z-index: 100;  
+}
+.router {
+    z-index: -1; 
+}
+.tweak {
+    position: sticky; 
+    top: 0; 
+}
+.table-tweak {
+    white-space:normal;
+}
 </style>

@@ -5,3 +5,5 @@
 // export default defineConfig({
 //   plugins: [vue()],
 // })
+
+remember that no user should be created without filling the user position filled in the account tab 

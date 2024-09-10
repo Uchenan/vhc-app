@@ -5,6 +5,10 @@ import './assets/css/index.css'
 import "@mdi/font/css/materialdesignicons.css"
 import router from "./router"
 import store from "./store"
+import axios from "axios"
+import { Collapse } from 'vue-collapsed'
 
 
-createApp(App).use(store).use(router).mount('#app')
+axios.defaults.headers.common['vhc_token'] = store.getters['token/details']
+
+createApp(App).use(store).use(router).component("Collapse", Collapse).mount('#app')

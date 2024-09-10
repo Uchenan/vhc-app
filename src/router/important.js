@@ -2,28 +2,30 @@ import store from "@/store"
 
 export default [
     {
-        name: "mm", 
-        path: "/",
-        beforeEnter: (to, from ,next) => {
-            let user = store.state.user.user
-            if(user === null){
-                alert("Not Authenticated yet!")
-                store.commit("unsetUser")
-                next({path: "/login"})
-            } else {
-                if(user.account.ref_id.toString().substring(7) === "SA"){
-                    alert("Authenticated. Welcome dear")
-                    next({path: "/ad"})
-                } else {
-                    next({path: "/test"})
-                }
-            }
-        },
-    },
-    {
         name: "login",
         path: "/login",
-        component: () => import("@/pages/imp/LoginPage.vue")
+        component: () => import("@/pages/imp/LoginPage.vue"),
+        beforeEnter: (to, from, next) => {
+            let position = ""
+            let user = store.state.user.user
+            
+            if(Object.keys(user).length > 0){
+                position = user.account.ref_id.toString().substr(7)
+                if(position === "SA" && user.account.admin_rights == "yes"){
+                    next({name: "adHome"})
+                } else if(position === "SU"){
+                    next({name: "suHome"})
+                } else if(position === "SA"){
+                    next({name: "saHome"})
+                } else {
+                    alert("Not Authenticated yet!")
+                    store.commit("user/UNSET_USER")
+                    store.commit("deactivateLoadingState")
+                    next({path: "/login"})
+                }
+            }
+            next()
+        }
     },
     {
         name: "generateInstruction",
@@ -33,19 +35,21 @@ export default [
     {
         name: "test",
         path: "/test", 
-        component: () => import("@/pages/imp/TestPage.vue")
+        component: () => import("@/testers/ApiTest.vue")
     },
     {
         name: "logout",
         path: "/logout",
         component: () => import("@/pages/imp/LogoutPage.vue"),
-        beforeEnter: () => {
+        beforeEnter: (to, from, next) => {
             let user = store.state.user.user
-            if(user === null){
+            if(Object.keys(user).length === 0){
                 alert("Not Authenticated yet!")
-                store.commit("unsetUser")
+                store.commit("user/UNSET_USER")
                 store.commit("deactivateLoadingState")
                 next({path: "/login"})
+            } else {
+                next()
             }
         }
     }

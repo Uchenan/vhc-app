@@ -25,7 +25,6 @@
 
 <script>
 import PageTitleComponent from "@/components/PageTitleComponent.vue"
-import { getAllLogs } from "@/services/log.service"
 
 export default {
     components: {
@@ -37,18 +36,8 @@ export default {
         }
     },
     mounted(){
-        getAllLogs().then(doc => {
-            if(doc === "nil"){
-                setTimeout(() => {
-                    alert("Weak Network Connection")
-                    this.$router.push({name: 'adHome'})
-                }, 3000)
-            } else {
-                this.logs = doc
-                this.$store.commit('deactivateLoadingState')
-            }
-
-        })
+        this.logs = this.$store.getters['log/details']
+        this.$store.commit('deactivateLoadingState')
     }
 }
 </script>

@@ -3,12 +3,12 @@
         <div class="bg-primary dark:bg-primarydark px-4 py-2 text-white mb-3 flex items-center">
             <div class="flex flex-col">
                 <span class="font-bold">{{ greeter }}</span>
-                <span>{{ `${$store.state.user.user.bio.title} ${$store.state.user.user.bio.surname} ${$store.state.user.user.bio.other_names}`}}</span>
+                <span>{{ $store.getters['user/fullName'] }}</span>
             </div>
             <div>
                 <router-link
                     class="bg-secondary text-gray-800 rounded-md ml-4 py-2 px-3 text-xl hover:cursor-pointer hover:bg-secondarydark hover:text-white"
-                    :to="{name: 'adEditStaff', params: {staffId: $store.state.user.user.account.ref_id}}">
+                    :to="{name: 'adMyProfile', params: { staffId: $store.getters['user/details'].account.ref_id }}">
                         <i class="mdi mdi-account-eye"></i>
                 </router-link> 
             </div>
@@ -22,7 +22,6 @@
                     :key="index" :icon="value.icon" :name="value.name" :path="value.path" />
             </div>
         </div>
-
 
         <div class="mt-8 p-2 ">
             <span class="block text-2xl font-thin border-b-2">Recent Actions 
@@ -49,8 +48,7 @@
 
 <script>
 import NavLinkComponent from "@/components/NavLinkComponent.vue"
-import { getAllLogs } from "@/services/log.service"
-
+// import Buffer from 'buffer'
 export default {
     components: {
         NavLinkComponent
@@ -58,9 +56,15 @@ export default {
     data() {
         return {
             navLinks: [
-                {name: "Manage Staffs", path: "adStaff", icon: "human-male-board"},
+                {name: "Staffs", path: "adStaff", icon: "human-male-board"},
+                {name: "Students", path: "adStudent", icon: "human-male-board"},
+                {name: "Classes", path: "adClass", icon: "google-classroom"},
+                {name: "Subjects", path: "adSubject", icon: "book-education"},
+                {name: "Applicants", path: "adApplicant", icon: "account-file"},
+                {name: "Bills", path: "adBill", icon: "script-text-outline"},
                 {name: "Transfer Instruction", path: "adInstruction", icon: "script-text-outline"},
-                {name: "Logout", path: "logout", icon: "logout"}
+                {name: "Income Analysis", path: "adIncomeAnalysis", icon: "finance"},
+                {name: "Logout", path: "logout", icon: "logout"},
             ],
             logs: []
         }
@@ -76,21 +80,14 @@ export default {
             } else {
                 return "Good Evening"
             }
+        },
+        admin(){
+            let res = this.$store.getters['user/details']
         }
     },
     mounted() {
-        getAllLogs(5).then(doc => {
-            if(doc === "nil"){
-                setTimeout(() => {
-                    alert("Weak Network Connection")
-                    this.$router.push({name: 'adHome'})
-                }, 3000)
-            } else {
-                this.logs = doc
-                this.$store.commit('deactivateLoadingState')
-            }
-
-        })
+        // this.logs = this.$store.getters['log/details']
+        this.$store.commit('deactivateLoadingState')
     }
 }
 </script>

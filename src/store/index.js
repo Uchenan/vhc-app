@@ -1,40 +1,30 @@
+// USEFUL LIBRARIES 
 import { createStore } from 'vuex'
-import staffsModule from "./staffs"
-import userModule from "./user"
 import VuexPersister from "vuex-persister"
-import SecureLS from "secure-ls"
 
-const SecureStorage = new SecureLS({encodingType: 'aes'})
-
+// USEFUL MODULES 
+import userModule from "./userModule"
+import staffModule from "./staffModule"
+import studentModule from './studentModule'
+import logModule from './logModule'
+import subjectModule from './subjectModule'
+import subjectPackageModule from './subjectPackageModule'
+import tokenModule from './tokenModule'
+import applicantModule from './applicantModule'
+import levelModule from './levelModule'
+import importantModule from './importantModule'
 
 const vuexPersister = new VuexPersister({
     key: "vhc",
-    statesToPersist: ['loadingState', 'user'],
-    overwrite: true,
+    // statesToPersist: ["loadingState", "user", "staff", "log", "subject"],
+    overwrite: true, 
     storage: sessionStorage,
-    storage: {
-        getItem: (key) => SecureStorage.get(key),
-        setItem: (key, value) => SecureStorage.set(key,value),
-        removeItem: (key) => SecureStorage.remove(key),
-        length: SecureStorage.getAllKeys().length, 
-        clear: () => SecureStorage.clear(),
-        key: (key) => null
-    }
-
 })
 
-
-export default createStore({
+const store = createStore({
     state: {
         loadingState: false,
-        titles: ['Mr.', 'Mrs.', 'Master', 'Ms.'],
-        gender: [
-            {name: "Male", value: "M"},
-            {name: "Female", value: "F"}
-        ],
-        instruction: {}
     },
-    getters: {},
     mutations: {
         activateLoadingState(state){
             state.loadingState = true 
@@ -42,19 +32,26 @@ export default createStore({
         deactivateLoadingState(state){
             state.loadingState = false 
         },
-        setInstruction(state, payload){
-            state.instruction = payload 
-        },
-        unsetInstruction(state) {
-            state.instruction = {}
-        }
     }, 
-    actions: {},
     modules: {
-        staffs: staffsModule,
-        user: userModule
+        user: userModule,
+        staff: staffModule,
+        log: logModule,
+        subject: subjectModule,
+        subjectPackage: subjectPackageModule, 
+        token: tokenModule,
+        student: studentModule,
+        applicant: applicantModule,
+        important: importantModule,
+        level: levelModule
+
     },
     plugins: [
         vuexPersister.persist
-    ]
+    ],
+    strict: true
 })
+
+vuexPersister.persist(store)
+
+export default store

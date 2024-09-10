@@ -1,6 +1,6 @@
 <template>
     <div>
-       <PageTitleComponent backTo="adStaff" title="Create Staff" />
+       <PageTitleComponent backTo="adStaff" title="Create New Staff" />
         <div>
             <br />
             <form @submit.prevent="handleSubmit">
@@ -34,7 +34,7 @@
 
                 <label class="my-2">
                     <span class="block font-medium text-slate-700 text-sm dark:text-white">Date of Birth</span>
-                    <input type="date" class="input-type-1" v-model="staff.bio.dob" required />
+                    <input type="date" class="input-type-1" v-model="staff.bio.date_of_birth" required />
                 </label>
 
                 <label class="my-2">
@@ -58,12 +58,20 @@
 
                 <label class="my-2">
                     <span class="block font-medium text-slate-700 text-sm dark:text-white">Job Position</span>
-                    <input type="text" class="input-type-1" v-model="staff.account.job_position" required />
+                    <input type="text" class="input-type-1" v-model="staff.account.position" required />
                 </label>
 
                 <label class="my-2">
                     <span class="block font-medium text-slate-700 text-sm dark:text-white">Admin Rights Enabled?</span>
                     <select class="input-type-1" v-model="staff.account.admin_rights">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </label>
+
+                <label class="my-2">
+                    <span class="block font-medium text-slate-700 text-sm dark:text-white">Disable Account?</span>
+                    <select class="input-type-1" v-model="staff.account.disable_acct">
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
                     </select>
@@ -89,8 +97,8 @@
 <script>
 import PageTitleComponent from "@/components/PageTitleComponent.vue"
 import staffModel from "@/models/staff.model"
-import { createStaff } from "@/services/staff.service"
-import { createLog, logBodyForm } from "@/services/log.service"
+import { openModal } from "jenesius-vue-modal"
+import ModalComponent from "@/components/ModalComponent.vue"
 
 
 export default {
@@ -108,46 +116,31 @@ export default {
         handleSubmit(){
             this.$store.commit('activateLoadingState')
             if(this.staff.account.password === this.checkPassword){
-                createStaff(this.staff).then(doc => {
-                    if(doc === "nil"){
-                        setTimeout(() => {
-                            alert("An internal error occurred - 105. Staff is not created.")
-                            this.$store.commit('deactivateLoadingState')
-                        }, 3000)
-                    } else {
-                        alert("Staff created successfully")
-
-
-                        // crafting log message
-                        let initiator = `${this.$store.state.user.user.bio.title} ${this.$store.state.user.user.bio.surname} ${this.$store.state.user.user.bio.other_names}`
-                        let recipient = `${this.staff.bio.title} ${this.staff.bio.surname} ${this.staff.bio.other_names}`
-                        let message = `${initiator} created a new staff: "${recipient}"`
+                this.$store.dispatch('staff/create', this.staff).then(doc => {
+                    if(doc){
+                        openModal(ModalComponent, {modal_type: "success", modal_body: `Staff with Ref ID of ${doc.data.account.ref_id} created successfully`})
                         
-
-                        // stores a log body message in the database 
-                        createLog(logBodyForm(message))
-
-
+                        //clearing input fields 
                         this.staff.bio.title = ""
                         this.staff.bio.surname = ""
                         this.staff.bio.other_names = ""
                         this.staff.bio.gender = ""
-                        this.staff.bio.dob = ""
+                        this.staff.bio.date_of_birth = ""
                         this.staff.bio.state_of_origin = ""
                         this.staff.bio.nationality = ""
                         this.staff.bio.religion = ""
                         this.staff.account.job_position = ""
+                        this.staff.account.disable_acct = ""
                         this.staff.account.admin_rights = ""
                         this.staff.account.password = ""
                         this.checkPassword = ""
-
-                        this.$store.commit('deactivateLoadingState')
+                    } else {
+                        console.log(doc)
+                        openModal(ModalComponent, {modal_type: "failed", modal_body: "Staff creation failed!"})
                     }
-                }, err => {
-                    alert("An internal error occurred - 104. Staff is not created.")
                 })
             } else {
-                alert("The passwords don not match!!! Please try again")
+                openModal(ModalComponent, {modal_type: "failed", modal_body: "The passwords do not match!!! Please try again"})
                 this.$store.commit('deactivateLoadingState')
                 this.checkPassword = ""
 

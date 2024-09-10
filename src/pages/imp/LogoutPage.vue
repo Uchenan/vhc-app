@@ -23,7 +23,7 @@ export default {
         },
         proceed(){
             this.$store.commit("activateLoadingState")
-            this.$store.commit("unsetUser")
+            this.$store.commit("user/UNSET_USER")
             this.$router.push({name: "login"})
         }
     }
