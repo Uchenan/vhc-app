@@ -154,7 +154,8 @@
                             {{ index + 1}}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
-                            {{ decode_subject_code(value.code) || value.code }} 
+                            <!-- {{  value.code }}  -->
+                            {{ decode_subject_code(value.code) }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             {{ decode_teacher(value.teacher) || "NOT ASSIGNED" }}
@@ -173,8 +174,51 @@
                 </tbody>
             </table>
         </div>
+        
+        <br />
+        
+        <!-- VIEW ALL STUDENTS IN THE CLASS  -->
+        <span class="block font-medium text-slate-700 text-sm dark:text-white">Students in Class</span>
+        <div class="border-b border-gray-200 w-full my-2 shadow">
+            <table class="divide-y divide-green-400 w-full">
+                <thead class="bg-gray-100">
+                    <tr class="divide-x">
+                        <th class="w-12 text-center py-2 text-xs text-gray-500">
+                            S/N
+                        </th>
+                        <th class="px-6 py-2 text-xs text-gray-500">
+                            Name 
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white  divide-y divide-gray-300" v-if="allStudentsInClass.length > 0">
+                    <tr class="whitespace-nowrap divide-x" 
+                        v-for="(value, index) in allStudentsInClass" :key="index">
+                        <td class="w-12 text-center py-4 text-sm text-gray-500">
+                            {{ index + 1 }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            {{ `${value.bio.surname} ${value.bio.other_names}` }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody class="bg-white  divide-y divide-gray-300" v-else>
+                    <tr class="whitespace-nowrap divide-x" >
+                        <td class="w-12 text-center py-4 text-sm text-gray-500" colspan="2">
+                            --- No Student is recorded under this class ---
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- {{ allStudentsInClass }} -->
+
+
+
 
         <!-- SUBMIT BUTTON -->
+        <button class="form-btn-1 px-6 mb-8 bg-danger mr-2" @click="deleteClass"><i class="mdi mdi-trash-can mr-2"></i>Delete Class</button>
         <button class="form-btn-1 px-6 mb-8" @click="update"><i class="mdi mdi-upload mr-2"></i>Update Information</button>
     </div>
 </template>
@@ -217,8 +261,10 @@ export default {
     mounted(){
         this.$store.dispatch('staff/fetchStaffs')
         this.$store.dispatch('subjectPackage/fetchSubjectPackage')
+        
         this.$store.commit("deactivateLoadingState")
         // this.decode_teacher("right here")
+
     },
     computed: {
         title(){
@@ -248,7 +294,14 @@ export default {
                 res.push(x)
             })
             return res
-        }
+        },
+        allStudentsInClass() {
+            let res = this.$store.getters['student/details'].filter(x => x.academic.level === this.level.code)
+
+            return res 
+
+        },
+
     },
     methods: {
         async changeSubjectsPermissions(val){
@@ -277,12 +330,23 @@ export default {
             return name 
         },
         decode_subject_code(code){
-            let name = "s"
-            if(code !== ''){
+            let name
+            if(code !== '' && code.length == 7){
+                name = code.toString().substr(4)
                 this.allSubjectPackages.forEach(subjectPackage => {
                     subjectPackage.subjects.forEach(subject => {
-                        if(subject.code === code.toString().substr(4)){
-                            name = subject.name 
+                        if(subject.code === name){
+                            // console.log("match " + subject.code + " " + code)
+                            // console.log(subject.code + " " + subject.name)
+                            name = subject.name
+                            return
+                        }else if(subject.sub_subjects.length > 0){
+                            // console.log("Do not match " + subject.code + " " + code)
+                            subject.sub_subjects.forEach(innerSubject => {
+                                if(innerSubject.code === name){
+                                    name = innerSubject.name 
+                                }
+                            })
                         }
                     })
                 })
@@ -300,6 +364,24 @@ export default {
                     this.$store.dispatch('level/update', this.level).then(res => {
                         if(res == true){
                             openModal(ModalComponent, {modal_type: "success", modal_body: "Class details updated Successfully"})
+                        } else {
+                            openModal(ModalComponent, {modal_type: "failed", modal_body: res})
+                        }
+                    })
+                }
+            })
+        },
+        async deleteClass() {
+            let modal = await openModal(ConfirmComponent, {file_body: "You sure you want to delete this class from the database?"})
+
+            modal.on('return', (value) => {
+                if(value == false) {
+                    modal.close()
+                } else {
+                    this.$store.dispatch('level/removeLevel', this.level.code).then(res => {
+                        if(res == true){
+                            openModal(ModalComponent, {modal_type: "success", modal_body: "Class details updated Successfully"})
+                            this.$router.push({name: 'adClass'})
                         } else {
                             openModal(ModalComponent, {modal_type: "failed", modal_body: res})
                         }

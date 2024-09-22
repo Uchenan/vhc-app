@@ -118,6 +118,11 @@ export default [
                 component: () => import("@/pages/admin/class_files/AdminClassEditPage.vue")
             },
             {
+                name: "adClassUnclassified",
+                path: "class/unclassified", 
+                component: () => import("@/pages/admin/class_files/AdminClassUnclassifiedPage.vue")
+            },
+            {
                 name: "adSubject",
                 path: "subject", 
                 component: () => import("@/pages/admin/subject_files/AdminSubjectPage.vue")
@@ -141,6 +146,11 @@ export default [
                 name: "adViewApplicant", 
                 path: "applicant/:gen_id", 
                 component: () => import("@/pages/admin/applicant_files/AdminViewSpecificApplicant.vue")
+            },
+            {
+                name: "adAcademic", 
+                path: "academic", 
+                component: () => import("@/pages/admin/academic_files/AdminAcademicPage.vue")
             },
             {
                 name: "adBill",

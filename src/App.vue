@@ -4,7 +4,7 @@
             <ModalComponent />
         </div>
         <LoadingComponent v-if="loadingState" /> 
-        <div class="router text-sm">
+        <div class="router text-xs">
             <router-view></router-view>
         </div>
     </div>
@@ -39,5 +39,8 @@ export default {
 }
 .table-tweak {
     white-space:normal;
+}
+.modal-container {
+    background-color: red; 
 }
 </style>

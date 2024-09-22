@@ -76,6 +76,22 @@ export default {
             })
 
             return result
+        },
+        async removeLevel({ commit }, code){
+            let result = false 
+            store.commit('activateLoadingState')
+            await axios.delete(`${import.meta.env.VITE_URI}/level/${code}`).then(data => {
+                if(data.data.success === true){
+                    result = true
+                    store.dispatch('level/fetchLevels')
+                } else {
+                    alert("An internal error occurred")
+                }
+            }).finally(() => {
+                store.commit('deactivateLoadingState')
+            })
+
+            return result 
         }
     },
     mutations: {

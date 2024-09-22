@@ -14,7 +14,17 @@
             </router-link>
         </div> 
         <div class="mt-8 text-center" v-else>
-            ----- No Registered Subject yet! ----- 
+            ----- No Registered Class yet! ----- 
+        </div> 
+
+        
+        <!-- FOR STUDENTS THAT ARE NOT PLACED INTO CLASSES  -->
+        <br /> 
+        <div class="mt-4 border-t">
+            <router-link class="p-3 my-4 mx-2 rounded-xl block bg-gray-200" 
+                :to="{name: 'adClassUnclassified'}">
+                <i class="mdi mdi-radiobox-marked mr-2"></i> Unclassified Students 
+            </router-link>
         </div> 
     </div>
 </template>

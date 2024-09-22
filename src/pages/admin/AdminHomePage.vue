@@ -61,6 +61,7 @@ export default {
                 {name: "Classes", path: "adClass", icon: "google-classroom"},
                 {name: "Subjects", path: "adSubject", icon: "book-education"},
                 {name: "Applicants", path: "adApplicant", icon: "account-file"},
+                {name: "Academic Sessions", path: "adAcademic", icon: "school"}, 
                 {name: "Bills", path: "adBill", icon: "script-text-outline"},
                 {name: "Transfer Instruction", path: "adInstruction", icon: "script-text-outline"},
                 {name: "Income Analysis", path: "adIncomeAnalysis", icon: "finance"},
