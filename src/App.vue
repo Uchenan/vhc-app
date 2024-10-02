@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="text-gray-700 tweaker">
         <div class="absolute z-40">
             <ModalComponent />
         </div>
@@ -42,5 +42,14 @@ export default {
 }
 .modal-container {
     background-color: red; 
+}
+.tweaker {
+    background-color: white; 
+    position: absolute;
+    top: 0;
+    bottom: 0 !important;
+    left: 0;
+    right: 0; 
+    overflow: auto; 
 }
 </style>

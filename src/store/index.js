@@ -13,6 +13,7 @@ import tokenModule from './tokenModule'
 import applicantModule from './applicantModule'
 import levelModule from './levelModule'
 import importantModule from './importantModule'
+import sessionModule from './sessionModule'
 
 const vuexPersister = new VuexPersister({
     key: "vhc",
@@ -43,7 +44,9 @@ const store = createStore({
         student: studentModule,
         applicant: applicantModule,
         important: importantModule,
-        level: levelModule
+        level: levelModule,
+        session: sessionModule
+
 
     },
     plugins: [

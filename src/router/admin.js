@@ -153,6 +153,16 @@ export default [
                 component: () => import("@/pages/admin/academic_files/AdminAcademicPage.vue")
             },
             {
+                name: "adAcademicSpecific", 
+                path: "academic/specific", 
+                component: () => import("@/pages/admin/academic_files/AdminAcademicSpecificPage.vue")
+            },
+            {
+                name: "adAcademicCreate", 
+                path: "academic/create", 
+                component: () => import("@/pages/admin/academic_files/AdminAcademicCreatePage.vue")
+            },
+            {
                 name: "adBill",
                 path: "bill", 
                 beforeEnter: (to, from, next) => {

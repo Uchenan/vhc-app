@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities; 
 
+@layer base {
+  html {
+    color-scheme: light !important; 
+  }
+}
+
 @layer components {
     .input-type-1 {
         @apply block mt-1 bg-white mb-4 w-full px-2 py-2 border text-gray-500 rounded-md border-slate-300 focus:outline-none focus:border-primarylight focus:ring-1
