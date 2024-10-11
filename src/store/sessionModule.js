@@ -17,6 +17,72 @@ export default {
         }
     }, 
     actions: {
+        // deactivates a session in the database
+        async deactivate({ commit }, payload){
+            let result = false 
+            store.commit('activateLoadingState')
+            await axios.post(`${import.meta.env.VITE_URI}/session/deactivate`, payload).then(data => {
+                if(data.data.success !== false){
+                    store.dispatch('session/fetchSessions')
+                    result = true 
+                } else {
+                    result = data.data.error
+                }
+            }).catch(err => {
+                if(err.response.data.success === false){
+                    result = err.response.data.error
+                } 
+            }).finally(() => {
+                store.commit('deactivateLoadingState')
+            })
+
+            return result
+        },
+
+        // activates a session in the database
+        async activate({ commit }, payload){
+            let result = false 
+            store.commit('activateLoadingState')
+            await axios.post(`${import.meta.env.VITE_URI}/session/activate`, payload).then(data => {
+                if(data.data.success !== false){
+                    store.dispatch('session/fetchSessions')
+                    result = true 
+                } else {
+                    result = data.data.error
+                }
+            }).catch(err => {
+                if(err.response.data.success === false){
+                    result = err.response.data.error
+                } 
+            }).finally(() => {
+                store.commit('deactivateLoadingState')
+            })
+
+            return result
+        },
+
+        // creates a new session in the database 
+        async create({ commit }, payload){
+            let result = false 
+            store.commit('activateLoadingState')
+            await axios.post(`${import.meta.env.VITE_URI}/session`, payload).then(data => {
+                if(data.data.success !== false){
+                    store.dispatch('session/fetchSessions')
+                    result = true 
+                } else {
+                    result = data.data.error
+                }
+            }).catch(err => {
+                if(err.response.data.success === false){
+                    result = err.response.data.error
+                } 
+            }).finally(() => {
+                store.commit('deactivateLoadingState')
+            })
+
+            return result
+        },
+
         // fetches sessions from the database 
         async fetchSessions({ commit }){
             let result = false 

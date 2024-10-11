@@ -8,8 +8,11 @@
             <button class="block w-max bg-primary text-white rounded-br-lg rounded-bl-lg py-2 px-3 hover:bg-primarydark" @click="clickImg">Change Picture </button> 
         </div>
 
+
+        {{ student.academic }}
+        {{  available_departments }}
         <div class="flex flex-col items-center w-full py-2 tweak-one bg-white">
-            <span class="text-2xl font-bold">{{ `${student.bio.surname.toUpperCase()} ${student.bio.other_names.toUpperCase()}` }}</span>
+            <span class="text-2xl font-bold">{{ fullname }}</span>
             <span class="text-md">{{ `${student.account.ref_id}` }}</span>
             <button @click="updateHandler" class="py-1 px-6 bg-secondary hover:bg-secondarydark hover:text-white rounded-md my-2 focus:outline-none"><i class="mdi mdi-update"></i> Update</button>
         </div>
@@ -162,8 +165,22 @@
         <form>
             <label class="my-2">
                 <span class="block font-medium text-slate-700 text-sm dark:text-white">Class</span>
-                <input type="text" class="input-type-1" v-model="student.academic.level" />
+                <select class="input-type-1" v-model="student.academic.level">
+                    <option v-for="(value, index) in allLevels" :key="index" :value="value.code">
+                        {{ value.name }}
+                    </option>
+                </select>
             </label>
+
+            <label class="my-2">
+                <span class="block font-medium text-slate-700 text-sm dark:text-white">Department</span>
+                <select class="input-type-1" v-model="student.academic.department">
+                    <option v-for="(value, index) in available_departments" :key="index">
+                        {{ value }}
+                    </option>
+                </select>
+            </label>
+
 
              <label class="my-2">
                 <span class="block font-medium text-slate-700 text-sm dark:text-white">Prefect</span>
@@ -335,30 +352,67 @@ import { openModal } from "jenesius-vue-modal"
 import ModalComponent from "@/components/ModalComponent.vue"
 import UploadFileComponent from "@/components/UploadFileComponent.vue"
 import { imageStudentUploader } from "@/helpers/imageUploader"
+import { toRaw } from 'vue'
 
 
 export default {
     components: {PageTitleComponent},
     data(){
         return {
-            
+            student: structuredClone(toRaw(this.$store.getters['student/specific'](this.$route.params.ref_id))),
+            available_departments: [],
+            fullname: ""
         }
     },
+    watch:{
+        "student.academic.level": {
+            handler: function(val){
+                this.available_departments = []
+                this.student.academic.department = ""
+                this.departmentsChoice(val)
+            }
+        }
+    }, 
     computed: {
-        student() {
-            let res = Object.assign({}, this.$store.getters['student/specific'](this.$route.params.ref_id))
-            let result = JSON.stringify(res)
-            return JSON.parse(result)
+        // fullname(){
+        //     let names = structuredClone(toRaw(this.student.bio))
+        //     return `${names.surname.toUpperCase()} ${names.other_names.toUpperCase()}`
+        // },
+        allLevels(){
+            return this.$store.getters['level/details']
         }
     },
     mounted() {
+        let names = structuredClone(toRaw(this.student.bio))
+        this.fullname = `${names.surname.toUpperCase()} ${names.other_names.toUpperCase()}`
+
+        this.$store.dispatch('level/fetchLevels')
+        this.departmentsChoice(this.student.academic.level)
         this.$store.commit('deactivateLoadingState')
     },
     methods: {
+        departmentsChoice(val){
+            let level = this.allLevels.filter(x => x.code === val)
+            if(level.length !== 0){
+                level[0].arms.forEach(x => {
+                    this.available_departments.push(x.department)
+                })
+            }
+        },
+        LevelNameFormatter(val){
+            const level = this.allLevels.filter(x => x.code === val)
+            if(level.length == 0){
+                return ""
+            } else {
+                return level[0].name 
+            }
+        },
         updateHandler(){
             this.$store.dispatch('student/update', this.student).then(doc => {
                 if(doc === true){
                     openModal(ModalComponent, {modal_type: "success", modal_body: `${this.student.account.ref_id} details were updated successfully`})
+                    let names = structuredClone(toRaw(this.student.bio))
+                    this.fullname = `${names.surname.toUpperCase()} ${names.other_names.toUpperCase()}`
                 } else {
                     openModal(ModalComponent, {modal_type: "failed", modal_body: "Account updated failed due to internal errors"})
                 }
