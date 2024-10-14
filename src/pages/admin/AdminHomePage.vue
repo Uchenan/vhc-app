@@ -13,6 +13,8 @@
                 </router-link> 
             </div>
         </div>
+
+        <AcademicSessionIndiComponent /> 
         
 
         <div class="mt-2 p-2 ">
@@ -48,10 +50,11 @@
 
 <script>
 import NavLinkComponent from "@/components/NavLinkComponent.vue"
-// import Buffer from 'buffer'
+import AcademicSessionIndiComponent from "@/components/AcademicSessionIndiComponent.vue";
+
 export default {
     components: {
-        NavLinkComponent
+        NavLinkComponent, AcademicSessionIndiComponent
     },
     data() {
         return {
@@ -88,6 +91,7 @@ export default {
     },
     mounted() {
         // this.logs = this.$store.getters['log/details']
+        this.$store.dispatch('session/fetchSessions')
         this.$store.commit('deactivateLoadingState')
     }
 }

@@ -43,6 +43,16 @@ export default [
                 name: "saProfile",
                 path: ":staffId", 
                 component: () => import("@/pages/staff/profile_files/StaffProfilePage.vue")
+            },
+            {
+                name: "saClassroom", 
+                path: "classroom", 
+                component: () => import("@/pages/staff/classroom_files/StaffClassroomPage.vue")
+            },
+            {
+                name: "saScoresheet", 
+                path: "score-sheet", 
+                component: () => import("@/pages/staff/scoresheet_files/StaffScoresheetPage.vue")
             }
         ]
     }

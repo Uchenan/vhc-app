@@ -17,6 +17,48 @@ export default {
         }
     }, 
     actions: {
+        // locks or unlocks a term in the session 
+        async term_guard({ commit }, payload){
+            let result = false 
+            store.commit('activateLoadingState')
+            await axios.put(`${import.meta.env.VITE_URI}/session/term-guard`, payload).then(data => {
+                if(data.data.success !== false){
+                    store.dispatch('session/fetchSessions')
+                    result = true 
+                } else {
+                    result = data.data.error
+                }
+            }).catch(err => {
+                if(err.response.data.success === false){
+                    result = err.response.data.error
+                } 
+            }).finally(() => {
+                store.commit('deactivateLoadingState')
+            })
+            return result
+        },
+
+        // activates a term in the session and deactivates others 
+        async activate_term({ commit }, payload){
+            let result = false 
+            store.commit('activateLoadingState')
+            await axios.post(`${import.meta.env.VITE_URI}/session/term-activate`, payload).then(data => {
+                if(data.data.success !== false){
+                    store.dispatch('session/fetchSessions')
+                    result = true 
+                } else {
+                    result = data.data.error
+                }
+            }).catch(err => {
+                if(err.response.data.success === false){
+                    result = err.response.data.error
+                } 
+            }).finally(() => {
+                store.commit('deactivateLoadingState')
+            })
+
+            return result
+        },
         // deactivates a session in the database
         async deactivate({ commit }, payload){
             let result = false 

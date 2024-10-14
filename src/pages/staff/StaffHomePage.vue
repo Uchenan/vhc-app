@@ -14,10 +14,7 @@
             </div>
         </div>
 
-        <div>
-            Disabled Account => {{ $store.getters['user/details'].account.disable_acct }}
-        </div>
-        
+        <AcademicSessionIndiComponent /> 
 
         <div class="mt-2 p-2 ">
             <span class="block text-2xl font-thin border-b-2">Activities</span>
@@ -32,16 +29,17 @@
 
 <script>
 import NavLinkComponent from "@/components/NavLinkComponent.vue"
+import AcademicSessionIndiComponent from "@/components/AcademicSessionIndiComponent.vue";
 
 export default {
     components: {
-        NavLinkComponent
+        NavLinkComponent, AcademicSessionIndiComponent
     },
     data() {
         return {
             navLinks: [
-                {name: "My Subjects", path: "test", icon: "briefcase"},
-                {name: "My Class", path: "test", icon: "google-classroom"},
+                {name: "Scoresheets", path: "saScoresheet", icon: "briefcase"},
+                {name: "My Classroom", path: "saClassroom", icon: "google-classroom"},
                 {name: "Logout", path: "logout", icon: "logout"},
             ],
             logs: []
@@ -61,6 +59,7 @@ export default {
         }
     },
     mounted() {
+        this.$store.dispatch('session/fetchSessions')
         this.$store.commit('deactivateLoadingState')
     }
 }

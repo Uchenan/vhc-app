@@ -43,7 +43,7 @@
                     </tbody>
                     <tbody class="divide-y" v-else>
                         <tr class="divide-x">
-                            <td colspan="3" class="text-center p-2"> --- No Grade System created --- </td>
+                            <td colspan="3" class="text-center p-2"> --- No Mark Allocated yet! --- </td>
                         </tr>
                     </tbody>
                 </table>
@@ -94,6 +94,38 @@
                 </table>
             </div>
         </div>
+
+        <br /> 
+
+        <div>
+            <h2 class="heading-small border-b">
+                Terms Analysis
+                <span class="text-danger text-danger text-center  text-xs ml-2">Locking or Unlocking a term will make a term either block or allow scores inputs. Proceed with caution!</span>
+            </h2>
+            <div class="flex justify-center items-center flex-col text-xs">
+                <span>
+                    <i class="mdi mdi-lock text-xl mx-2"></i> => Term is Locked  
+                </span>
+                <span>
+                    <i class="mdi mdi-lock-off text-xl mx-2"></i> => Term is Unlocked 
+                </span>
+            </div>
+            <div v-for="(value, index) in academic.terms" :key="index" 
+                class="flex items-center justify-between block px-3 py-2 rounded-md border my-4"
+                :class="(value.active)? ' text-green-700 bg-green-100 ' : ' text-gray-700 bg-gray-100 ' ">
+                <div class="flex">
+                    <i class="block mdi mdi-radiobox-marked mr-2"></i> {{ value.name }}
+                </div>
+                <div>
+                    <button class="text-xl p-1 border mx-1 rounded-md" @click="change_lock_state(value)">
+                        <i class="mdi mdi-lock" v-if="value.locked"></i>
+                        <i class="mdi mdi-lock-off" v-else></i>
+                    </button>
+                    <button v-if="value.active" disabled><i class="mdi mdi-check text-lg"></i></button>
+                    <button v-else class="btn-1 text-xs bg-green-700" @click="activate_term(value)">ACTIVATE</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -115,13 +147,82 @@ export default {
     },
     computed: {
         academic() {
-            return structuredClone(toRaw(this.$store.getters['session/specific'](this.$route.query.name)))
+            return this.$store.getters['session/specific'](this.$route.query.name)
+            // return structuredClone(toRaw(this.$store.getters['session/specific'](this.$route.query.name)))
         }
     },
     mounted(){
+        this.$store.dispatch('level/fetchLevels')
         this.$store.commit('deactivateLoadingState')
     },
     methods: {
+        async change_lock_state(val){
+            let modal 
+
+            switch(val.locked){
+                case true:
+                    modal = await openModal(ConfirmComponent, {file_body: `Unlock ${val.name}?`})
+                    modal.on('return', returned_value => {
+                        if(returned_value){
+                            this.$store.dispatch('session/term_guard', {
+                                name: this.academic.name, 
+                                term: val.name,
+                                locked: !val.locked 
+                            }).then(data => {
+                                if(data){
+                                    openModal(ModalComponent, {modal_type: "success", modal_body: `${val.name} unlocked successfully`})
+                                } else {
+                                    openModal(ModalComponent, {modal_type: "failed", modal_body: `${val.name} unlocking failed!`})
+                                }
+                            })
+                        } else {
+                            modal.close()
+                        }
+                    })
+                    break 
+                case false: 
+                    modal = await openModal(ConfirmComponent, {file_body: `Lock ${val.name}?`})
+                    modal.on('return', returned_value => {
+                        if(returned_value){
+                            this.$store.dispatch('session/term_guard', {
+                                name: this.academic.name, 
+                                term: val.name,
+                                locked: !val.locked 
+                            }).then(data => {
+                                if(data){
+                                    openModal(ModalComponent, {modal_type: "success", modal_body: `${val.name} locked successfully`})
+                                } else {
+                                    openModal(ModalComponent, {modal_type: "failed", modal_body: `${val.name} locking failed!`})
+                                }
+                            })
+                        } else {
+                            modal.close()
+                        }
+                    })
+                    break 
+                default: 
+                    openModal(ModalComponent, {modal_type: "warning", modal_body: "An Internal error occurred!"})
+            }
+        },
+        async activate_term(val){
+            let modal = await openModal(ConfirmComponent, {file_body: `Are you sure you want to activate ${val.name}?`})
+            modal.on('return', returned_value => {
+                if(returned_value){
+                    this.$store.dispatch('session/activate_term', {
+                        name: this.academic.name, 
+                        term: val.name
+                    }).then(data => {
+                        if(data){
+                            openModal(ModalComponent, {modal_type: "success", modal_body: `${val.name} activated successfully`})
+                        } else {
+                            openModal(ModalComponent, {modal_type: "failed", modal_body: `${val.name} activation failed!`})
+                        }
+                    })
+                } else {
+                    modal.close()
+                }
+            })
+        },
         edit_grade_setting(){
             alert("Editing grade system")
         },

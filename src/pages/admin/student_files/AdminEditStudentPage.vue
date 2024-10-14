@@ -374,10 +374,6 @@ export default {
         }
     }, 
     computed: {
-        // fullname(){
-        //     let names = structuredClone(toRaw(this.student.bio))
-        //     return `${names.surname.toUpperCase()} ${names.other_names.toUpperCase()}`
-        // },
         allLevels(){
             return this.$store.getters['level/details']
         }
